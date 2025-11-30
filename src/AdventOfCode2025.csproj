@@ -11,4 +11,8 @@
     <PackageReference Include="System.CommandLine" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="**\*.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
