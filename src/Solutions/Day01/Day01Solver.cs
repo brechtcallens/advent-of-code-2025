@@ -11,29 +11,16 @@ public class Day01Solver : BaseDaySolver
         var position = 50;
         foreach (var line in input)
         {
-            var direction = line[0];
-            var change = int.Parse(line[1..]);
+            var rotation = line[0];
+            var distance = int.Parse(line[1..]);
 
-            switch (direction)
-            {
-                case 'L':
-                    position -= change;
-                    break;
-                case 'R':
-                    position += change;
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unknown direction: {direction}");
-            }
-
-            position = (position + 100) % 100;
+            position = (NextPosition(position, rotation, distance) + 100) % 100;
 
             if (position == 0)
-            {
                 solution++;
-            }
         }
-        return $"{solution}";
+
+        return solution.ToString();
     }
 
     protected override string SolvePart2(string[] input)
@@ -43,36 +30,30 @@ public class Day01Solver : BaseDaySolver
         var position = 50;
         foreach (var line in input)
         {
+            var rotation = line[0];
+            var distance = int.Parse(line[1..]);
+
+            var roundTrips = distance / 100;
+            distance %= 100;
+
             var prevPosition = position;
-            var direction = line[0];
-            var change = int.Parse(line[1..]);
-            
-            var times = change / 100;
-            change %= 100;
+            position = NextPosition(position, rotation, distance);
 
-            switch (direction)
-            {
-                case 'L':
-                    position -= change;
-                    break;
-                case 'R':
-                    position += change;
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unknown direction: {direction}");
-            }
+            solution += roundTrips;
+            if ((position <= 0 || position >= 100) && prevPosition != 0)
+                solution++;
 
-            solution += times;
-            if (position <= 0 || position >= 100)
-            {
-                position = (position + 100) % 100;
-                if (prevPosition != 0)
-                {
-                    solution ++;
-                }
-            }
+            position = (position + 100) % 100;
         }
-        
-        return $"{solution}";
+
+        return solution.ToString();
     }
+
+    private int NextPosition(int currentPosition, char rotation, int distance) =>
+        rotation switch
+        {
+            'L' => currentPosition - distance,
+            'R' => currentPosition + distance,
+            _ => throw new InvalidOperationException($"Unknown rotation: {rotation}"),
+        };
 }
