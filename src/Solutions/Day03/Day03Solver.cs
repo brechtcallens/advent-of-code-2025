@@ -9,13 +9,12 @@ public class Day03Solver : BaseDaySolver
         var solution = 0;
         foreach (var line in input)
         {
-            var numbers = line.Select(c => int.Parse(c.ToString())).ToList();
-            var maxLeft = int.Parse(line[^2].ToString());
-            var maxRight = int.Parse(line[^1].ToString());
+            var maxLeft = line[^2];
+            var maxRight = line[^1];
 
             for (int i = line.Length - 3; i >= 0; i--)
             {
-                var current = int.Parse(line[i].ToString());
+                var current = line[i];
                 if (current >= maxLeft)
                 {
                     if (maxLeft > maxRight)
@@ -37,18 +36,15 @@ public class Day03Solver : BaseDaySolver
         long solution = 0;
         foreach (var line in input)
         {
-            var numbers = line.Select(c => int.Parse(c.ToString())).ToList();
-            var maxList = numbers.GetRange(numbers.Count - 12, 12);
-            
-            for (int i = numbers.Count - 13; i >= 0; i--)
+            var maxList = line[(line.Length - 12)..line.Length].ToCharArray();
+
+            for (int i = line.Length - maxList.Length - 1; i >= 0; i--)
             {
-                var current = numbers[i];
+                var current = line[i];
                 var currentMaxIndex = 0;
-                while (currentMaxIndex < maxList.Count && current >= maxList[currentMaxIndex])
+                while (currentMaxIndex < maxList.Length && current >= maxList[currentMaxIndex])
                 {
-                    var prevCurrent = current;
-                    current = maxList[currentMaxIndex];
-                    maxList[currentMaxIndex] = prevCurrent;
+                    (maxList[currentMaxIndex], current) = (current, maxList[currentMaxIndex]);
                     currentMaxIndex++;
                 }
             }
