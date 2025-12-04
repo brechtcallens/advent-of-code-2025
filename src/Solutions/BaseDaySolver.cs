@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace AdventOfCode2025.Solutions;
 
 public abstract class BaseDaySolver : IDaySolver
@@ -19,10 +21,12 @@ public abstract class BaseDaySolver : IDaySolver
         var originalOut = Console.Out;
         foreach (var partToSolve in partsToSolve)
         {
-            using (new CustomTimeLogger(originalOut, $"solve day {Day} part {(partToSolve == DayPart.Part1 ? 1 : 2)}{(solveExample ? " (example)" : "")}"))
+            using (new CustomTimeLogger(originalOut, $"solve day {Day} [part {(partToSolve == DayPart.Part1 ? 1 : 2)}]{(solveExample ? " (example)" : "")}"))
             {
+                var stopwatch = Stopwatch.StartNew();
                 var solution = partToSolve == DayPart.Part1 ? SolvePart1(input) : SolvePart2(input);
-                Console.WriteLine("SOLUTION: " + solution);
+                stopwatch.Stop();
+                Console.WriteLine($"SOLUTION: {solution} (elapsed: {stopwatch.ElapsedMilliseconds}ms)");
             }
         }
     }

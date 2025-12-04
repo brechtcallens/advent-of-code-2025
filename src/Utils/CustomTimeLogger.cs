@@ -25,7 +25,7 @@ class CustomTimeLogger : TextWriter
     {
         if (disposing)
         {
-            LogInfo($"FINISHED: {_timerOperation} IN {(DateTime.Now - _startTime).TotalMilliseconds / 1000} SECONDS");
+            LogInfo($"FINISHED: {_timerOperation}");
             Console.SetOut(_original);
         }
         base.Dispose(disposing);
