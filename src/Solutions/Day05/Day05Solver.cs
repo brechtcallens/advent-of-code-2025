@@ -31,19 +31,13 @@ public class Day05Solver : BaseDaySolver
         var freshIngredientCount = 0;
         foreach (var ingredient in ingredients)
         {
-            var isFresh = false;
-            var rangeIndex = 0;
-            while (rangeIndex < ranges.Count && !isFresh)
+            for (int rangeIndex = 0; rangeIndex < ranges.Count; rangeIndex++)
             {
                 if (ranges[rangeIndex].start <= ingredient && ingredient <= ranges[rangeIndex].end)
                 {
-                    isFresh = true;
+                    freshIngredientCount++;
+                    break;
                 }
-                rangeIndex++;
-            }
-            if (isFresh)
-            {
-                freshIngredientCount++;
             }
         }
 
@@ -75,24 +69,19 @@ public class Day05Solver : BaseDaySolver
         var freshIngredientCount = currentEnd - currentStart + 1;
         foreach (var (start, end) in ranges[1..])
         {
-            if (end <= currentEnd)
-            {
-                // New range is contained by the previous one, so no need to do anything.
-            }
-            else if (start > currentEnd)
+            if (start > currentEnd)
             {
                 // We had a range and now we're jumping forward to a new non-overlapping range.
                 currentStart = start;
                 currentEnd = end;
                 freshIngredientCount += currentEnd - currentStart + 1;
             }
-            else
+            else if (end > currentEnd)
             {
                 // We have some overlap between the new range and the old range.
                 // S1.....E1
                 //    S2.......E2
                 freshIngredientCount += end - currentEnd;
-                currentStart = start;
                 currentEnd = end;
             }
         }
