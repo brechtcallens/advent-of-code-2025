@@ -12,13 +12,13 @@ public class Day02Solver : BaseDaySolver
     protected override string SolvePart2(string[] input) =>
         SolveGeneric(input, @"^(\d+)\1+$");
 
-    private string SolveGeneric(string[] input, string regexString)
+    private static string SolveGeneric(string[] input, string regexString)
     {
         long invalidIds = 0;
         var ranges = input[0].Split(',')
             .ToList()
             .Select(range => range.Split("-").ToList());
-        
+
         foreach (var range in ranges)
         {
             var start = range[0];

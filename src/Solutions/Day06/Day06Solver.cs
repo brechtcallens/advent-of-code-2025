@@ -7,26 +7,26 @@ public class Day06Solver : BaseDaySolver
     public override int Day => 6;
 
     private static readonly string digitMatchRegexString = @"\d+";
-    
+
     private readonly Regex digitGroupsRegex = new(digitMatchRegexString);
 
     protected override string SolvePart1(string[] input)
     {
         var numbersGroupedByLine = input[..^1]
-            .Select(line => 
+            .Select(line =>
                 digitGroupsRegex
                     .Matches(line)
                     .Select((match) => long.Parse(match.Value))
                     .ToArray())
             .ToArray();
-        
+
         var operations = input[^1]
             .Where(c => c != ' ')
             .ToArray();
 
         var grandTotal = operations
             .Select((operation, exercise) =>
-                calculateExercise(operation, numbersGroupedByLine.Select((numbers) => numbers[exercise])))
+                CalculateExercise(operation, numbersGroupedByLine.Select((numbers) => numbers[exercise])))
             .Sum();
 
         return grandTotal.ToString();
@@ -59,13 +59,13 @@ public class Day06Solver : BaseDaySolver
 
         var grandTotal = operations
             .Select((operation, exercise) =>
-                calculateExercise(operation, numbersGroupedByExercise[exercise]))
+                CalculateExercise(operation, numbersGroupedByExercise[exercise]))
             .Sum();
 
         return grandTotal.ToString();
     }
 
-    private static long calculateExercise(char operation, IEnumerable<long> numbers) =>
+    private static long CalculateExercise(char operation, IEnumerable<long> numbers) =>
          operation switch
          {
              '+' => numbers.Sum(),

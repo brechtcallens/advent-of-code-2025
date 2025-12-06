@@ -49,7 +49,7 @@ public class Day01Solver : BaseDaySolver
         return solution.ToString();
     }
 
-    private int NextPosition(int currentPosition, char rotation, int distance) =>
+    private static int NextPosition(int currentPosition, char rotation, int distance) =>
         rotation switch
         {
             'L' => currentPosition - distance,

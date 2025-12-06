@@ -19,16 +19,16 @@ public class Day04Solver : BaseDaySolver
                 }
 
                 var rolls = 0;
-                
+
                 int d = 0;
                 while (d < 9 && rolls < 4)
                 {
                     var dx = (d / 3) - 1;
                     var dy = (d % 3) - 1;
                     if (!(dx == 0 && dy == 0) &&
-                        0 <= i+dx && i+dx < input.Length &&
-                        0 <= j+dy && j+dy < input[i].Length &&
-                        input[i+dx][j+dy] == '@')
+                        0 <= i + dx && i + dx < input.Length &&
+                        0 <= j + dy && j + dy < input[i].Length &&
+                        input[i + dx][j + dy] == '@')
                     {
                         rolls++;
                     }
@@ -47,7 +47,7 @@ public class Day04Solver : BaseDaySolver
     protected override string SolvePart2(string[] input)
     {
         var inputChars = input.Select(line => line.ToCharArray()).ToArray();
-        
+
         var totalRemovedRolls = 0;
         var removedRolls = 0;
         do
@@ -56,7 +56,7 @@ public class Day04Solver : BaseDaySolver
             totalRemovedRolls += removedRolls;
         }
         while (removedRolls > 0);
-        
+
         return totalRemovedRolls.ToString();
     }
 
@@ -73,16 +73,16 @@ public class Day04Solver : BaseDaySolver
                 }
 
                 var rolls = 0;
-                
+
                 int d = 0;
                 while (d < 9 && rolls < 4)
                 {
                     var dx = (d / 3) - 1;
                     var dy = (d % 3) - 1;
                     if (!(dx == 0 && dy == 0) &&
-                        0 <= i+dx && i+dx < inputChars.Length &&
-                        0 <= j+dy && j+dy < inputChars[i].Length &&
-                        inputChars[i+dx][j+dy] == '@')
+                        0 <= i + dx && i + dx < inputChars.Length &&
+                        0 <= j + dy && j + dy < inputChars[i].Length &&
+                        inputChars[i + dx][j + dy] == '@')
                     {
                         rolls++;
                     }

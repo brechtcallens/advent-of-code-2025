@@ -2,7 +2,7 @@
 using System.CommandLine;
 
 // Command: ./AdventOfCode2025
-RootCommand rootCommand = new();
+RootCommand rootCommand = [];
 
 // Command: ./AdventOfCode2025 solve
 Command solveCommand = new("solve", "Solve the advent of code puzzle for a specific day.");
@@ -20,7 +20,7 @@ Option<DayPart> partOption = new("--part", "-p")
 {
     Description = "Part of the puzzle to solve (defaults to both parts)",
     CustomParser = result =>
-        result.Tokens.First().Value switch
+        result.Tokens[0].Value switch
         {
             "1" => DayPart.Part1,
             "2" => DayPart.Part2,

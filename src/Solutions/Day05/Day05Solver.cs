@@ -52,7 +52,7 @@ public class Day05Solver : BaseDaySolver
             if (line.Length == 0)
             {
                 // We don't care about what comes after...
-                break; 
+                break;
             }
             else
             {

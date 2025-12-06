@@ -19,7 +19,7 @@ public class DaySolverFactory
         new Day06Solver()
     ];
 
-    private readonly Dictionary<int, IDaySolver> _solversDictionary = 
+    private readonly Dictionary<int, IDaySolver> _solversDictionary =
         _solvers.ToDictionary(solver => solver.Day);
 
     public IDaySolver GetSolver(int day)
