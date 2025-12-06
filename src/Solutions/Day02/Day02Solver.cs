@@ -14,29 +14,24 @@ public class Day02Solver : BaseDaySolver
 
     private static string SolveGeneric(string[] input, string regexString)
     {
+        var ranges = input[0]
+            .Split(',')
+            .Select(range => range.Split("-"))
+            .Select(splitRange => (long.Parse(splitRange[0]), long.Parse(splitRange[1])));
+        
+        var conditionRegex = new Regex(regexString);       
+
         long invalidIds = 0;
-        var ranges = input[0].Split(',')
-            .ToList()
-            .Select(range => range.Split("-").ToList());
-
-        foreach (var range in ranges)
+        foreach (var (start, end) in ranges)
         {
-            var start = range[0];
-            var end = range[1];
-
-            var startNumber = long.Parse(start);
-            var endNumber = long.Parse(end);
-
-            for (long n = startNumber; n <= endNumber; n++)
+            for (long n = start; n <= end; n++)
             {
-                var conditionRegex = new Regex(regexString);
-                var check = conditionRegex.Match(n.ToString());
-                if (check.Success)
+                if (conditionRegex.IsMatch(n.ToString()))
                 {
                     invalidIds += n;
                 }
             }
-        }
+        }        
         return invalidIds.ToString();
     }
 }
