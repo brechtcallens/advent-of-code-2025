@@ -4,50 +4,34 @@ public class Day07Solver : BaseDaySolver
 {
     public override int Day => 7;
 
-    protected override string SolvePart1(string[] input)
+    protected override string SolvePart1(string[] grid)
     {
-        var grid = input.Select(line => line.ToCharArray()).ToArray();
-        var startPosition = (0, Array.FindIndex(grid[0], c => c == 'S'));
+        var startPosition = (0, grid[0].IndexOf('S'));
 
         var visited = new HashSet<(int, int)>();        
         var stack = new Stack<(int row, int column)>([startPosition]);
         while (stack.TryPop(out var position))
         {
-            while (position.row < grid.Length && grid[position.row][position.column] != '^')
+            position = NextSplitPosition(grid, position);
+            if (position.row < grid.Length && visited.Add(position))
             {
-                position.row++;
-            }
-
-            if (position.row < grid.Length && !visited.Contains(position))
-            {
-                visited.Add(position);
                 stack.Push((position.row, position.column - 1));
                 stack.Push((position.row, position.column + 1));
             }
         }
-
         return visited.Count.ToString();
     }
 
-    protected override string SolvePart2(string[] input)
+    protected override string SolvePart2(string[] grid)
     {
-        var grid = input.Select(line => line.ToCharArray()).ToArray();
-        var startPosition = (0, Array.FindIndex(grid[0], c => c == 'S'));
-        var cache = new Dictionary<(int, int), long>();
-
-        var solution = SolveRecursively(grid, startPosition, cache);
-
+        var startPosition = (0, grid[0].IndexOf('S'));
+        var solution = SolveRecursively(grid, startPosition, []);
         return solution.ToString();
     }
 
-    private static long SolveRecursively(char[][] grid, (int row, int column) startPosition, Dictionary<(int, int), long> cache)
+    private static long SolveRecursively(string[] grid, (int row, int column) startPosition, Dictionary<(int, int), long> cache)
     {
-        var position = startPosition;
-        while (position.row < grid.Length && grid[position.row][position.column] != '^')
-        {
-            position.row++;
-        }
-
+        var position = NextSplitPosition(grid, startPosition);
         if (position.row < grid.Length)
         {
             if (!cache.TryGetValue(position, out long subSolution))
@@ -59,5 +43,12 @@ public class Day07Solver : BaseDaySolver
             return subSolution;
         }
         return 1L;
+    }
+
+    private static (int row, int column) NextSplitPosition(string[] grid, (int row, int column) position)
+    {
+        while (position.row < grid.Length && grid[position.row][position.column] != '^')
+            position.row++;
+        return position;
     }
 }
