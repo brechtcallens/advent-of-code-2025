@@ -4,4 +4,10 @@ obj/
 *.suo
 .vs/
 .vscode/
+
+# Prevent leaking AoC cookie for fetching puzzle inputs
 .session_cookie
+
+# Don't upload example's and input's from AoC to the repo
+**/input.txt
+**/example.txt
