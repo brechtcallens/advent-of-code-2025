@@ -65,7 +65,7 @@ public class Day05Solver : BaseDaySolver
         ranges.Sort();
 
         var currentStart = ranges[0].start;
-        var currentEnd = ranges[1].end;
+        var currentEnd = ranges[0].end;
         var freshIngredientCount = currentEnd - currentStart + 1;
         foreach (var (start, end) in ranges[1..])
         {
