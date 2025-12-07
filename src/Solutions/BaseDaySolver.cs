@@ -26,7 +26,7 @@ public abstract class BaseDaySolver : IDaySolver
                 var stopwatch = Stopwatch.StartNew();
                 var solution = partToSolve == DayPart.Part1 ? SolvePart1(input) : SolvePart2(input);
                 stopwatch.Stop();
-                Console.WriteLine($"SOLUTION: {solution} (elapsed: {stopwatch.ElapsedMilliseconds}ms)");
+                Console.WriteLine($"SOLUTION: {solution} (elapsed: {stopwatch.Elapsed.TotalMilliseconds:F3}ms)");
             }
         }
     }
