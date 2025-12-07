@@ -8,7 +8,7 @@ public class Day07Solver : BaseDaySolver
     {
         var startPosition = (0, grid[0].IndexOf('S'));
 
-        var visited = new HashSet<(int, int)>();        
+        var visited = new HashSet<(int, int)>();
         var stack = new Stack<(int row, int column)>([startPosition]);
         while (stack.TryPop(out var position))
         {
@@ -25,19 +25,19 @@ public class Day07Solver : BaseDaySolver
     protected override string SolvePart2(string[] grid)
     {
         var startPosition = (0, grid[0].IndexOf('S'));
-        var solution = SolveRecursively(grid, startPosition, []);
+        var solution = SolveBeamOptionsRecursively(grid, startPosition, []);
         return solution.ToString();
     }
 
-    private static long SolveRecursively(string[] grid, (int row, int column) startPosition, Dictionary<(int, int), long> cache)
+    private static long SolveBeamOptionsRecursively(string[] grid, (int row, int column) startPosition, Dictionary<(int, int), long> cache)
     {
         var position = NextSplitPosition(grid, startPosition);
         if (position.row < grid.Length)
         {
             if (!cache.TryGetValue(position, out long subSolution))
             {
-                subSolution = SolveRecursively(grid, (position.row, position.column - 1), cache)
-                    + SolveRecursively(grid, (position.row, position.column + 1), cache);
+                subSolution = SolveBeamOptionsRecursively(grid, (position.row, position.column - 1), cache)
+                    + SolveBeamOptionsRecursively(grid, (position.row, position.column + 1), cache);
                 cache[position] = subSolution;
             }
             return subSolution;

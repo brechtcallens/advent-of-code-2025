@@ -18,8 +18,8 @@ public class Day02Solver : BaseDaySolver
             .Split(',')
             .Select(range => range.Split("-"))
             .Select(splitRange => (long.Parse(splitRange[0]), long.Parse(splitRange[1])));
-        
-        var conditionRegex = new Regex(regexString);       
+
+        var conditionRegex = new Regex(regexString);
 
         long invalidIds = 0;
         foreach (var (start, end) in ranges)
@@ -31,7 +31,7 @@ public class Day02Solver : BaseDaySolver
                     invalidIds += n;
                 }
             }
-        }        
+        }
         return invalidIds.ToString();
     }
 }
