@@ -11,8 +11,9 @@ public class Day08Solver : BaseDaySolver
         var boxes = GetBoxesFromInput(input);
         var boxDistances = GetConnectionDistancesFromBoxes(boxes);
 
+        var amountOfBoxDistances = isExample ? 10 : boxes.Length;
         var workingSets = new Stack<HashSet<int>>(
-            boxDistances[..boxes.Length]
+            boxDistances[..amountOfBoxDistances]
                 .Select(boxDistance => boxDistance.connection)
                 .Select(connection => new HashSet<int>([connection.l, connection.r]))
         );
