@@ -11,3 +11,7 @@ obj/
 # Don't upload example's and input's from AoC to the repo
 **/input.txt
 **/example.txt
+
+# Folder for Amazon Q and other alogorithms comparison
+others
+benchmarking
