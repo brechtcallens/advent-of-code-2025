@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace AdventOfCode2025.Solutions.Day04;
 
 public class Day04Solver : BaseDaySolver
