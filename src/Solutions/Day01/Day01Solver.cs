@@ -4,7 +4,7 @@ public class Day01Solver : BaseDaySolver
 {
     public override int Day => 1;
 
-    protected override string SolvePart1(string[] input)
+    protected override string SolvePart1(string[] input, bool isExample)
     {
         var solution = 0;
 
@@ -23,7 +23,7 @@ public class Day01Solver : BaseDaySolver
         return solution.ToString();
     }
 
-    protected override string SolvePart2(string[] input)
+    protected override string SolvePart2(string[] input, bool isExample)
     {
         var solution = 0;
 

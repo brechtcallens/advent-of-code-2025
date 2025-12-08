@@ -4,7 +4,7 @@ public class Day07Solver : BaseDaySolver
 {
     public override int Day => 7;
 
-    protected override string SolvePart1(string[] grid)
+    protected override string SolvePart1(string[] grid, bool isExample)
     {
         var startPosition = (0, grid[0].IndexOf('S'));
 
@@ -22,7 +22,7 @@ public class Day07Solver : BaseDaySolver
         return visited.Count.ToString();
     }
 
-    protected override string SolvePart2(string[] grid)
+    protected override string SolvePart2(string[] grid, bool isExample)
     {
         var startPosition = (0, grid[0].IndexOf('S'));
         var solution = SolveBeamOptionsRecursively(grid, startPosition, []);

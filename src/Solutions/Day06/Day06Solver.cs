@@ -10,7 +10,7 @@ public class Day06Solver : BaseDaySolver
 
     private readonly Regex digitGroupsRegex = new(digitMatchRegexString);
 
-    protected override string SolvePart1(string[] input)
+    protected override string SolvePart1(string[] input, bool isExample)
     {
         var numbersGroupedByLine = input[..^1]
             .Select(line =>
@@ -31,7 +31,7 @@ public class Day06Solver : BaseDaySolver
         return grandTotal.ToString();
     }
 
-    protected override string SolvePart2(string[] input)
+    protected override string SolvePart2(string[] input, bool isExample)
     {
         var operations = input[^1]
             .Where(c => c != ' ');

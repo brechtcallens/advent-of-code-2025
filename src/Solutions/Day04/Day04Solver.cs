@@ -4,7 +4,7 @@ public class Day04Solver : BaseDaySolver
 {
     public override int Day => 4;
 
-    protected override string SolvePart1(string[] input)
+    protected override string SolvePart1(string[] input, bool isExample)
     {
         var solution = 0;
         for (int i = 0; i < input.Length; i++)
@@ -42,7 +42,7 @@ public class Day04Solver : BaseDaySolver
         return solution.ToString();
     }
 
-    protected override string SolvePart2(string[] input)
+    protected override string SolvePart2(string[] input, bool isExample)
     {
         var inputChars = input.Select(line => line.ToCharArray()).ToArray();
 

@@ -4,7 +4,7 @@ public class Day05Solver : BaseDaySolver
 {
     public override int Day => 5;
 
-    protected override string SolvePart1(string[] input)
+    protected override string SolvePart1(string[] input, bool isExample)
     {
         var ranges = new List<(long start, long end)>();
         var ingredients = new List<long>();
@@ -44,7 +44,7 @@ public class Day05Solver : BaseDaySolver
         return freshIngredientCount.ToString();
     }
 
-    protected override string SolvePart2(string[] input)
+    protected override string SolvePart2(string[] input, bool isExample)
     {
         var ranges = new List<(long start, long end)>();
         foreach (var line in input)

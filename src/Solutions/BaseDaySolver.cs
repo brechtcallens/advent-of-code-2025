@@ -6,9 +6,9 @@ public abstract class BaseDaySolver : IDaySolver
 {
     public abstract int Day { get; }
 
-    protected abstract string SolvePart1(string[] input);
+    protected abstract string SolvePart1(string[] input, bool isExample);
 
-    protected abstract string SolvePart2(string[] input);
+    protected abstract string SolvePart2(string[] input, bool isExample);
 
     public void Solve(DayPart part, bool solveExample)
     {
@@ -24,7 +24,9 @@ public abstract class BaseDaySolver : IDaySolver
             using (new CustomTimeLogger(originalOut, $"solve day {Day} [part {(partToSolve == DayPart.Part1 ? 1 : 2)}]{(solveExample ? " (example)" : "")}"))
             {
                 var stopwatch = Stopwatch.StartNew();
-                var solution = partToSolve == DayPart.Part1 ? SolvePart1(input) : SolvePart2(input);
+                var solution = partToSolve == DayPart.Part1
+                    ? SolvePart1(input, solveExample)
+                    : SolvePart2(input, solveExample);
                 stopwatch.Stop();
                 Console.WriteLine($"SOLUTION: {solution} (elapsed: {stopwatch.Elapsed.TotalMilliseconds:F3}ms)");
             }

@@ -6,7 +6,7 @@ public class Day08Solver : BaseDaySolver
 {
     public override int Day => 8;
 
-    protected override string SolvePart1(string[] input)
+    protected override string SolvePart1(string[] input, bool isExample)
     {
         var boxes = GetBoxesFromInput(input);
         var boxDistances = GetConnectionDistancesFromBoxes(boxes);
@@ -43,7 +43,7 @@ public class Day08Solver : BaseDaySolver
         return largestCircuits.Aggregate((acc, val) => acc * val).ToString();
     }
 
-    protected override string SolvePart2(string[] input)
+    protected override string SolvePart2(string[] input, bool isExample)
     {
         var boxes = GetBoxesFromInput(input);
         var connectionDistances = GetConnectionDistancesFromBoxes(boxes);
