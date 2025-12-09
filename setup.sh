@@ -30,12 +30,12 @@ public class Day${day_padded}Solver : BaseDaySolver
 {
     public override int Day => ${day};
 
-    protected override string SolvePart1(string[] input)
+    protected override string SolvePart1(string[] input, bool isExample)
     {
         throw new NotImplementedException("Missing implementation for part 1.");
     }
 
-    protected override string SolvePart2(string[] input)
+    protected override string SolvePart2(string[] input, bool isExample)
     {
         throw new NotImplementedException("Missing implementation for part 2.");
     }
