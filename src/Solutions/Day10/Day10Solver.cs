@@ -26,7 +26,7 @@ public class Day10Solver : BaseDaySolver
                     var button = buttons[buttonIndex];
                     var stateWithButtonPressed = (ushort)(state ^ button);
                     var stateWithButtonPressedDepth = (ushort)(depth + 1);
-                    
+
                     // If the button press caused a complete 0 state, we know this depth caused a solution. 
                     // We can save this minimum depth and clear the stack to cancel while loop.
                     if (stateWithButtonPressed == 0)
@@ -35,7 +35,7 @@ public class Day10Solver : BaseDaySolver
                         stack.Clear();
                         break;
                     }
-                    
+
                     // Continue BFS queue adding to check next ones.
                     stack.Enqueue((stateWithButtonPressed, stateWithButtonPressedDepth, buttonIndex));
                 }
@@ -54,7 +54,7 @@ public class Day10Solver : BaseDaySolver
         var buttonParts = line[(buttonsStart + 1)..joltagesStart].Split(' ');
         var joltagePart = line[(joltagesStart + 1)..];
 
-        var lights = (ushort) 0;
+        var lights = (ushort)0;
         var lightsBools = lightPart[1..^1].Select(c => c == '#').ToArray();
         for (ushort i = 0; i < lightsBools.Length; i++)
         {
@@ -82,73 +82,61 @@ public class Day10Solver : BaseDaySolver
     protected override string SolvePart2(string[] input, bool isExample)
     {
         var counter = 0;
-        var total = 0;
+        int total = 0;
         foreach (var line in input)
         {
             Console.WriteLine($"{++counter}");
-            var parsedInput = new ParsedLineInputPart2(line);
-            var joltages = parsedInput.Joltages;
-            var buttons = parsedInput.Buttons;
+            var (joltages, buttons) = ParseLineInputForPart2(line);
 
-            // Console.WriteLine($"{string.Join(", ", joltages)}");
-            // foreach (var button in buttons)
-            //     Console.WriteLine($"| {string.Join(", ", button)}");
-
-            var currentDepth = 0;
-            var firstItem = joltages.Select(_ => 0).ToArray();
-            var stack = new Queue<(int[] bits, int depth)>([(firstItem, 0)]);
-            while (stack.TryDequeue(out var result))
+            var minCost = int.MaxValue;
+            var bestCosts = new Dictionary<string, short>();
+            var queue = new PriorityQueue<(short[] state, short cost), short>();
+            queue.Enqueue((joltages, 0), Heuristic(joltages));
+            while (queue.TryDequeue(out var current, out var currentEstimate))
             {
-                var (current, depth) = result;
-                if (CompareCurrentToJoltages(current, joltages) != CompareResult.TooMuch)
+                var (state, cost) = current;
+                // Console.WriteLine($"  {HashKey(state)} {cost} {queue.Count}");
+                if (IsSolution(state))
                 {
-                    foreach (var button in buttons)
+                    minCost = (int) cost;
+                    break;
+                }
+                foreach (var button in buttons)
+                {
+                    var newState = state.ToArray();
+                    var valid = true;
+                    foreach (var position in button)
                     {
-                        var newCurrent = current.ToArray();
-                        foreach (var buttonPart in button)
-                            newCurrent[buttonPart]++;
-                        var newCurrentDepth = depth + 1;
-                        if (CompareCurrentToJoltages(newCurrent, joltages) == CompareResult.Correct)
+                        if (--newState[position] < 0)
                         {
-                            // If completely 0 we know we have a solution. Clear to cancel while loop.
-                            currentDepth = newCurrentDepth;
-                            stack.Clear();
+                            valid = false;
                             break;
                         }
-                        // Continue BFS queue adding to check next ones.
-                        stack.Enqueue((newCurrent, newCurrentDepth));
+                    }
+                    if (valid)
+                    {
+                        var newStateKey = HashKey(newState);
+                        var newStateCost = (short)(cost + 1);
+                        if (!bestCosts.TryGetValue(newStateKey, out var bestCost) || bestCost > newStateCost)
+                        {
+                            bestCosts[newStateKey] = newStateCost;
+                            queue.Enqueue((newState, newStateCost), (short)(newStateCost + Heuristic(newState)));
+                        }
                     }
                 }
             }
-            total += currentDepth;
+            total += minCost;
         }
         return total.ToString();
     }
 
-    private CompareResult CompareCurrentToJoltages(int[] current, int[] joltages)
-    {
-        var result = CompareResult.Correct;
-        for (int i = 0; i < current.Length; i++)
-        {
-            if (current[i] > joltages[i])
-            {
-                return CompareResult.TooMuch;
-            }
-            else if (current[i] < joltages[i])
-            {
-                result = CompareResult.TooLittle;
-            }
-        }
-        return result;
-    }
-}
+    private static short Heuristic(short[] state) => state.Max();
 
-internal readonly struct ParsedLineInputPart2
-{
-    public int[] Joltages { get; init; }
-    public List<int[]> Buttons { get; init; }
+    private static bool IsSolution(short[] state) => state.All(n => n == 0);
 
-    public ParsedLineInputPart2(string line)
+    private static string HashKey(short[] state) => string.Join(',', state);
+
+    private (short[] joltages, List<short[]> buttons) ParseLineInputForPart2(string line)
     {
         var buttonsStart = line.IndexOf(" (");
         var joltagesStart = line.IndexOf(" {");
@@ -156,15 +144,15 @@ internal readonly struct ParsedLineInputPart2
         var buttonParts = line[(buttonsStart + 1)..joltagesStart].Split(' ');
         var joltagePart = line[(joltagesStart + 1)..];
 
-        Joltages = joltagePart[1..^1].Split(',').Select(int.Parse).ToArray();
+        var joltages = joltagePart[1..^1].Split(',').Select(short.Parse).ToArray();
 
-        Buttons = [];
+        var buttons = new List<short[]>();
         foreach (var buttonPart in buttonParts)
         {
-            var buttonArray = buttonPart[1..^1].Split(',').Select(int.Parse).ToArray();
-            Buttons.Add(buttonArray);
+            var buttonArray = buttonPart[1..^1].Split(',').Select(short.Parse).ToArray();
+            buttons.Add(buttonArray);
         }
+
+        return (joltages, buttons);
     }
 }
-
-internal enum CompareResult { TooMuch, TooLittle, Correct };
