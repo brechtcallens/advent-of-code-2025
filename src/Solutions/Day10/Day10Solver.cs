@@ -18,17 +18,17 @@ public class Day10Solver : BaseDaySolver
             var buttons = parsedInput.Buttons;
 
             var currentDepth = 0;
-            var stack = new Queue<(BitArray bits, int depth)>([(lights, 0)]);
+            var stack = new Queue<(ushort bits, ushort depth)>([(lights, 0)]);
             while (stack.TryDequeue(out var result))
             {
                 var (bits, depth) = result;
-                if (bits.HasAnySet())
+                if (bits != 0)
                 {
                     foreach (var button in buttons)
                     {
-                        var bitsXorButton = new BitArray(bits).Xor(button);
-                        var bitsXorButtonDepth = depth + 1;
-                        if (!bitsXorButton.HasAnySet())
+                        var bitsXorButton = (ushort)(bits ^ button);
+                        var bitsXorButtonDepth = (ushort)(depth + 1);
+                        if (bitsXorButton == 0)
                         {
                             // If completely 0 we know we have a solution. Clear to cancel while loop.
                             currentDepth = bitsXorButtonDepth;
@@ -111,28 +111,36 @@ public class Day10Solver : BaseDaySolver
 
 internal readonly struct ParsedLineInputPart1
 {
-    public BitArray Lights { get; init; }
-    public List<BitArray> Buttons { get; init; }
+    public ushort Lights { get; init; }
+    public List<ushort> Buttons { get; init; }
 
     public ParsedLineInputPart1(string line)
     {
         var buttonsStart = line.IndexOf(" (");
         var joltagesStart = line.IndexOf(" {");
 
-        var lightsPart = line[..buttonsStart];
+        var lightPart = line[..buttonsStart];
         var buttonParts = line[(buttonsStart + 1)..joltagesStart].Split(' ');
         var joltagePart = line[(joltagesStart + 1)..];
 
-        Lights = new BitArray(lightsPart[1..^1].Select(c => c == '#').ToArray());
-        
+        Lights = 0;
+        var lightsBools = lightPart[1..^1].Select(c => c == '#').ToArray();
+        for (ushort i = 0; i < lightsBools.Length; i++)
+        {
+            if (lightsBools[i])
+            {
+                Lights |= (ushort)(1 << i);
+            }
+        }
+
         Buttons = [];
         foreach (var buttonPart in buttonParts)
         {
-            var buttonBitArray = new BitArray(Lights.Length);
-            var affectedLights = buttonPart[1..^1].Split(',').Select(int.Parse);
+            var buttonBitArray = (ushort) 0;
+            var affectedLights = buttonPart[1..^1].Split(',').Select(ushort.Parse);
             foreach (var affectedLight in affectedLights)
             {
-                buttonBitArray.Set(affectedLight, true);
+                buttonBitArray |= (ushort)(1 << affectedLight);
             }
             Buttons.Add(buttonBitArray);
         }
