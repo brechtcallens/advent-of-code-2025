@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using System.Numerics;
 using System.Text.RegularExpressions;
 
@@ -13,36 +14,69 @@ public class Day10Solver : BaseDaySolver
         var total = 0;
         foreach (var line in input)
         {
-            var parsedInput = new ParsedLineInputPart1(line);
-            var lights = parsedInput.Lights;
-            var buttons = parsedInput.Buttons;
+            var (lights, buttons) = ParseLineInputForPart1(line);
 
             var currentDepth = 0;
-            var stack = new Queue<(ushort bits, ushort depth)>([(lights, 0)]);
+            var stack = new Queue<(ushort state, ushort depth, ushort minButtonIndex)>([(lights, 0, 0)]);
             while (stack.TryDequeue(out var result))
             {
-                var (bits, depth) = result;
-                if (bits != 0)
+                var (state, depth, minButtonIndex) = result;
+                for (ushort buttonIndex = minButtonIndex; buttonIndex < buttons.Count; buttonIndex++)
                 {
-                    foreach (var button in buttons)
+                    var button = buttons[buttonIndex];
+                    var stateWithButtonPressed = (ushort)(state ^ button);
+                    var stateWithButtonPressedDepth = (ushort)(depth + 1);
+                    
+                    // If the button press caused a complete 0 state, we know this depth caused a solution. 
+                    // We can save this minimum depth and clear the stack to cancel while loop.
+                    if (stateWithButtonPressed == 0)
                     {
-                        var bitsXorButton = (ushort)(bits ^ button);
-                        var bitsXorButtonDepth = (ushort)(depth + 1);
-                        if (bitsXorButton == 0)
-                        {
-                            // If completely 0 we know we have a solution. Clear to cancel while loop.
-                            currentDepth = bitsXorButtonDepth;
-                            stack.Clear();
-                            break;
-                        }
-                        // Continue BFS queue adding to check next ones.
-                        stack.Enqueue((bitsXorButton, bitsXorButtonDepth));
+                        currentDepth = stateWithButtonPressedDepth;
+                        stack.Clear();
+                        break;
                     }
+                    
+                    // Continue BFS queue adding to check next ones.
+                    stack.Enqueue((stateWithButtonPressed, stateWithButtonPressedDepth, buttonIndex));
                 }
             }
             total += currentDepth;
         }
         return total.ToString();
+    }
+
+    private (ushort lights, List<ushort> buttons) ParseLineInputForPart1(string line)
+    {
+        var buttonsStart = line.IndexOf(" (");
+        var joltagesStart = line.IndexOf(" {");
+
+        var lightPart = line[..buttonsStart];
+        var buttonParts = line[(buttonsStart + 1)..joltagesStart].Split(' ');
+        var joltagePart = line[(joltagesStart + 1)..];
+
+        var lights = (ushort) 0;
+        var lightsBools = lightPart[1..^1].Select(c => c == '#').ToArray();
+        for (ushort i = 0; i < lightsBools.Length; i++)
+        {
+            if (lightsBools[i])
+            {
+                lights |= (ushort)(1 << i);
+            }
+        }
+
+        var buttons = new List<ushort>();
+        foreach (var buttonPart in buttonParts)
+        {
+            var buttonBitArray = (ushort)0;
+            var affectedLights = buttonPart[1..^1].Split(',').Select(ushort.Parse);
+            foreach (var affectedLight in affectedLights)
+            {
+                buttonBitArray |= (ushort)(1 << affectedLight);
+            }
+            buttons.Add(buttonBitArray);
+        }
+
+        return (lights, buttons);
     }
 
     protected override string SolvePart2(string[] input, bool isExample)
@@ -109,44 +143,6 @@ public class Day10Solver : BaseDaySolver
     }
 }
 
-internal readonly struct ParsedLineInputPart1
-{
-    public ushort Lights { get; init; }
-    public List<ushort> Buttons { get; init; }
-
-    public ParsedLineInputPart1(string line)
-    {
-        var buttonsStart = line.IndexOf(" (");
-        var joltagesStart = line.IndexOf(" {");
-
-        var lightPart = line[..buttonsStart];
-        var buttonParts = line[(buttonsStart + 1)..joltagesStart].Split(' ');
-        var joltagePart = line[(joltagesStart + 1)..];
-
-        Lights = 0;
-        var lightsBools = lightPart[1..^1].Select(c => c == '#').ToArray();
-        for (ushort i = 0; i < lightsBools.Length; i++)
-        {
-            if (lightsBools[i])
-            {
-                Lights |= (ushort)(1 << i);
-            }
-        }
-
-        Buttons = [];
-        foreach (var buttonPart in buttonParts)
-        {
-            var buttonBitArray = (ushort) 0;
-            var affectedLights = buttonPart[1..^1].Split(',').Select(ushort.Parse);
-            foreach (var affectedLight in affectedLights)
-            {
-                buttonBitArray |= (ushort)(1 << affectedLight);
-            }
-            Buttons.Add(buttonBitArray);
-        }
-    }
-}
-
 internal readonly struct ParsedLineInputPart2
 {
     public int[] Joltages { get; init; }
@@ -161,7 +157,7 @@ internal readonly struct ParsedLineInputPart2
         var joltagePart = line[(joltagesStart + 1)..];
 
         Joltages = joltagePart[1..^1].Split(',').Select(int.Parse).ToArray();
-        
+
         Buttons = [];
         foreach (var buttonPart in buttonParts)
         {
