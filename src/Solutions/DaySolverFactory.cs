@@ -7,6 +7,7 @@ using AdventOfCode2025.Solutions.Day06;
 using AdventOfCode2025.Solutions.Day07;
 using AdventOfCode2025.Solutions.Day08;
 using AdventOfCode2025.Solutions.Day09;
+using AdventOfCode2025.Solutions.Day10;
 
 namespace AdventOfCode2025.Solutions;
 
@@ -22,7 +23,8 @@ public class DaySolverFactory
         new Day06Solver(),
         new Day07Solver(),
         new Day08Solver(),
-        new Day09Solver()
+        new Day09Solver(),
+        new Day10Solver()
     ];
 
     private readonly Dictionary<int, IDaySolver> _solversDictionary =
