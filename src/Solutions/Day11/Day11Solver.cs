@@ -55,16 +55,16 @@ public class Day11Solver : BaseDaySolver
         return FindPathsToOutThatContainDacAndFft(("svr", false, false, false, false), connections, [], []).ToString();
     }
 
-    private static int FindPathsToOutThatContainDacAndFft(
+    private static long FindPathsToOutThatContainDacAndFft(
         (string from, bool firstDac, bool firstFft, bool secondDac, bool secondFft) fromObject,
         Dictionary<string, string[]> connections, 
         HashSet<string> visits, 
-        Dictionary<(string, bool, bool, bool, bool), int> cache)
+        Dictionary<(string, bool, bool, bool, bool), long> cache)
     {
         (string from, bool firstDac, bool firstFft, bool secondDac, bool secondFft) = fromObject;
         if (from == "out")
         {
-            return ((firstDac && secondFft) || (firstFft && secondDac)) ? 1 : 0;
+            return ((firstDac && secondFft) || (firstFft && secondDac)) ? 1L : 0L;
         }
 
         if (cache.TryGetValue(fromObject, out var result))
@@ -72,7 +72,7 @@ public class Day11Solver : BaseDaySolver
             return result;
         }
 
-        var total = 0;
+        var total = 0L;
         foreach (var next in connections[from])
         {
             if (visits.Add(next))
