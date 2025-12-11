@@ -52,19 +52,19 @@ public class Day11Solver : BaseDaySolver
             var tos = line[5..].Split(' ');
             connections[from] = tos;
         }
-        return FindPathsToOutThatContainDacAndFft(("svr", false, false), connections, [], []).ToString();
+        return FindPathsToOutThatContainDacAndFft(("svr", false, false, false, false), connections, [], []).ToString();
     }
 
     private static int FindPathsToOutThatContainDacAndFft(
-        (string from, bool containsDac, bool containsFft) fromObject,
+        (string from, bool firstDac, bool firstFft, bool secondDac, bool secondFft) fromObject,
         Dictionary<string, string[]> connections, 
         HashSet<string> visits, 
-        Dictionary<(string, bool, bool), int> cache)
+        Dictionary<(string, bool, bool, bool, bool), int> cache)
     {
-        var (from, containsDac, containsFft) = fromObject;
+        (string from, bool firstDac, bool firstFft, bool secondDac, bool secondFft) = fromObject;
         if (from == "out")
         {
-            return containsDac && containsFft ? 1 : 0;
+            return ((firstDac && secondFft) || (firstFft && secondDac)) ? 1 : 0;
         }
 
         if (cache.TryGetValue(fromObject, out var result))
@@ -77,7 +77,12 @@ public class Day11Solver : BaseDaySolver
         {
             if (visits.Add(next))
             {
-                var nextObject = (next, containsDac || next == "dac", containsFft || next == "fft");
+                var firstSet = firstDac || firstFft;
+                var isDac = next == "dac";
+                var isFft = next == "fft";
+                var nextObject = firstSet
+                    ? (next, firstDac, firstFft, secondDac || isDac, secondFft || isFft)
+                    : (next, firstDac || isDac, firstFft || isFft, secondDac, secondFft);
                 total += FindPathsToOutThatContainDacAndFft(nextObject, connections, visits, cache);
                 visits.Remove(next);
             }
