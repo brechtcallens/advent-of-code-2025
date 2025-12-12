@@ -2,6 +2,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Numerics;
 using System.Text.RegularExpressions;
+using Google.OrTools.LinearSolver;
 
 namespace AdventOfCode2025.Solutions.Day10;
 
@@ -81,60 +82,57 @@ public class Day10Solver : BaseDaySolver
 
     protected override string SolvePart2(string[] input, bool isExample)
     {
-        var counter = 0;
-        int total = 0;
+        double total = 0;
         foreach (var line in input)
         {
-            Console.WriteLine($"{++counter}");
             var (joltages, buttons) = ParseLineInputForPart2(line);
 
-            var minCost = int.MaxValue;
-            var bestCosts = new Dictionary<string, short>();
-            var queue = new PriorityQueue<(short[] state, short cost), short>();
-            queue.Enqueue((joltages, 0), Heuristic(joltages));
-            while (queue.TryDequeue(out var current, out var currentEstimate))
+            Solver solver = Solver.CreateSolver("SCIP");
+
+            // Model each button as a variable in a LP equation problem.
+            var buttonVariables = buttons
+                .Select((_, index) => solver.MakeIntVar(0.0, double.PositiveInfinity, $"b{index}"))
+                .ToArray();
+
+            for (short joltage = 0; joltage < joltages.Length; joltage++)
             {
-                var (state, cost) = current;
-                // Console.WriteLine($"  {HashKey(state)} {cost} {queue.Count}");
-                if (IsSolution(state))
+                // Find all buttons that affect the current joltage.
+                var buttonsThatAffectJoltage = new List<short>();
+                for (short b = 0; b < buttons.Count; b++)
                 {
-                    minCost = (int) cost;
-                    break;
-                }
-                foreach (var button in buttons)
-                {
-                    var newState = state.ToArray();
-                    var valid = true;
-                    foreach (var position in button)
+                    if (buttons[b].Contains(joltage))
                     {
-                        if (--newState[position] < 0)
-                        {
-                            valid = false;
-                            break;
-                        }
-                    }
-                    if (valid)
-                    {
-                        var newStateKey = HashKey(newState);
-                        var newStateCost = (short)(cost + 1);
-                        if (!bestCosts.TryGetValue(newStateKey, out var bestCost) || bestCost > newStateCost)
-                        {
-                            bestCosts[newStateKey] = newStateCost;
-                            queue.Enqueue((newState, newStateCost), (short)(newStateCost + Heuristic(newState)));
-                        }
+                        buttonsThatAffectJoltage.Add(b);
                     }
                 }
+
+                // Create and add a linear expression of the affecting buttons with the expected joltage (e.g. b0 + b3 + b4 = 73)
+                LinearExpr expression = buttonVariables[buttonsThatAffectJoltage[0]];
+                for (int i = 1; i < buttonsThatAffectJoltage.Count; i++)
+                {
+                    expression += buttonVariables[buttonsThatAffectJoltage[i]];
+                }
+                solver.Add(expression == joltages[joltage]);
             }
-            total += minCost;
+
+            // Create the target for the LF problem, which is the minimal sum of all buttons.
+            LinearExpr minExpression = buttonVariables[0];
+            foreach (var variable in buttonVariables[1..])
+            {
+                minExpression += variable;
+            }
+            solver.Minimize(minExpression);
+
+            // Solve the equations and add if there's an optimal solution.
+            var resultStatus = solver.Solve();
+            if (resultStatus != Solver.ResultStatus.OPTIMAL)
+            {
+                throw new Exception("Not supposed to not find a solution!");
+            }
+            total += solver.Objective().Value();
         }
         return total.ToString();
     }
-
-    private static short Heuristic(short[] state) => state.Max();
-
-    private static bool IsSolution(short[] state) => state.All(n => n == 0);
-
-    private static string HashKey(short[] state) => string.Join(',', state);
 
     private (short[] joltages, List<short[]> buttons) ParseLineInputForPart2(string line)
     {
